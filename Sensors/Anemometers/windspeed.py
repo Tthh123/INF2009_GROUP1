@@ -1,3 +1,4 @@
+import time
 import serial
 
 # Open serial connection to Pico
@@ -17,4 +18,5 @@ while True:
             print(f"Voltage: {voltage:.3f} V -> Wind Speed: {wind_speed:.2f} m/s")
     except Exception as e:
         print(f"Error: {e}")
+    time.sleep(2)
 
