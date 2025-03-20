@@ -1,3 +1,6 @@
 venv
 env
 Forecast_Model_Data
+Forecast_Model/*.tflite
+Forecast_Model/*.keras
+Forecast_Model/*.jsonl
