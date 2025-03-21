@@ -32,7 +32,7 @@ client.loop_start()
 
 # Set BMP280 sea level pressure (adjust based on your location)
 SENSOR_BMP.sea_level_pressure = 1013.25  # Standard sea-level pressure in hPa
-
+wind_speed=0
 while True:
     try:
         # Read from BMP280 (air pressure)
