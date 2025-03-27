@@ -2,8 +2,9 @@ import requests
 import json
 import redis
 import datetime
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_mqtt import Mqtt
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 
@@ -40,7 +41,8 @@ else:
 app.config['MQTT_KEEPALIVE'] = 60
 app.config['MQTT_TOPIC'] = "sensor/data"
 
-mqtt = Mqtt(app)
+mqtt = Mqtt()
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ? Default route
 @app.route('/')
@@ -68,6 +70,8 @@ def handle_mqtt_message(client, userdata, message):
 
         # Store history of sensor readings with timestamp
         r.rpush("sensor_data_history", json.dumps(data_with_timestamp))
+        
+        socketio.emit('sensor_update', data_with_timestamp)
 
         print("?? Stored data in Redis.")
 
@@ -85,7 +89,11 @@ def get_latest_data():
 def get_data_history():
     history = r.lrange("sensor_data_history", 0, -1)
     return jsonify([json.loads(item) for item in history]), 200
+    
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
 
 if __name__ == '__main__':
     mqtt.init_app(app)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
