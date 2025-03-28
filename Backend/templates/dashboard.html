@@ -3,48 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Smart Weather Dashboard</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Socket.IO -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Dashboard JS -->
   <script src="/static/dashboard.js" defer></script>
   <style>
     body {
       font-family: sans-serif;
       background: #f4f4f4;
       padding: 2rem;
+      margin: 0;
     }
     h1 {
       text-align: center;
+      margin-bottom: 1rem;
     }
-    table {
-      margin: 0 auto;
+    #map {
+      height: 400px;
       width: 80%;
-      border-collapse: collapse;
-      background: #fff;
+      margin: 0 auto 2rem auto;
+      border: 2px solid #333;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 1rem;
-      text-align: center;
+    #charts-container {
+      width: 80%;
+      margin: 0 auto;
     }
-    th {
-      background-color: #333;
-      color: white;
+    canvas {
+      margin-bottom: 2rem;
     }
   </style>
 </head>
 <body>
   <h1>Smart Weather Monitoring Dashboard</h1>
-  <table id="data-table">
-    <thead>
-      <tr>
-        <th>Timestamp</th>
-        <th>Temperature (C)</th>
-        <th>Humidity (%)</th>
-        <th>Location</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Data rows will go here -->
-    </tbody>
-  </table>
+  <div id="map"></div>
+  <div id="charts-container"></div>
 </body>
 </html>
