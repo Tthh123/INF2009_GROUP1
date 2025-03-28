@@ -12,6 +12,7 @@ socket.on("sensor_update", (data) => {
     updateSafetyIndicators();
 });
 
+
 // Listen for forecast updates and update forecastData and safety indicators
 socket.on("forecast_update", (data) => {
     console.log("Forecast update received:", data);
