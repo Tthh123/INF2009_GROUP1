@@ -5,19 +5,18 @@ const socket = io();
 let currentReading = null;
 let forecastData = null;
 
-// Listen for sensor updates and update currentReading and safety indicators
+// Listen for sensor updates and update currentReading and the overall safety indicator
 socket.on("sensor_update", (data) => {
     console.log("Sensor update received:", data);
     currentReading = data;
-    updateSafetyIndicators();
+    updateSafetyFusion();
 });
 
-
-// Listen for forecast updates and update forecastData and safety indicators
+// Listen for forecast updates and update forecastData and the overall safety indicator
 socket.on("forecast_update", (data) => {
     console.log("Forecast update received:", data);
     forecastData = data;
-    updateSafetyIndicators();
+    updateSafetyFusion();
 });
 
 // Initialize Leaflet map centered on the new coordinates for Singapore
@@ -30,97 +29,83 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const marker = L.marker([1.4137857851172828, 103.91225886502723]).addTo(map);
 marker.bindPopup("Click here for detailed sensor data");
 
-// Function to update safety indicators for wind speed, air pressure, and humidity
-function updateSafetyIndicators() {
+// Function to update the overall safety indicator using sensor fusion
+function updateSafetyFusion() {
     // Ensure we have both current and forecast data with at least one prediction
     if (!currentReading || !forecastData || forecastData.predictions.length === 0) {
         return;
     }
     
-    // Use the first forecast prediction for analysis
+    // Use the first forecast prediction for the sensor fusion
     const forecastReading = forecastData.predictions[0];
     
-    // --- Wind Speed Safety Indicator ---
-    const currentWindSpeed = currentReading.wind_speed; // in m/s
-    const forecastWindSpeed = forecastReading.wind_speed; // in m/s
-    const currentWindKmh = currentWindSpeed * 3.6;
-    const forecastWindKmh = forecastWindSpeed * 3.6;
+    // --- Wind Speed (convert m/s to km/h) ---
+    const currentWindKmh = currentReading.wind_speed * 3.6;
+    const forecastWindKmh = forecastReading.wind_speed * 3.6;
+    let windRisk = 0;
     const windDiff = forecastWindKmh - currentWindKmh;
-    let windSafety = "Safe";
     if (windDiff >= 10) {
-        windSafety = "Avoid";
+        windRisk = 2;
     } else if (windDiff >= 5) {
-        windSafety = "Caution";
+        windRisk = 1;
     }
     
-    // --- Air Pressure Safety Indicator ---
-    const currentPressure = currentReading.air_pressure; // in hPa
-    const forecastPressure = forecastReading.air_pressure; // in hPa
-    const pressureDiff = forecastPressure - currentPressure;
-    let pressureSafety = "Safe";
-    // A drop in pressure may indicate unstable weather
+    // --- Air Pressure ---
+    let pressureRisk = 0;
+    const pressureDiff = forecastReading.air_pressure - currentReading.air_pressure;
     if (pressureDiff <= -5) {
-        pressureSafety = "Avoid";
+        pressureRisk = 2;
     } else if (pressureDiff <= -3) {
-        pressureSafety = "Caution";
+        pressureRisk = 1;
     }
     
-    // --- Humidity Safety Indicator ---
-    const currentHumidity = currentReading.humidity; // in %
-    const forecastHumidity = forecastReading.humidity; // in %
-    const humidityDiff = forecastHumidity - currentHumidity;
-    let humiditySafety = "Safe";
-    // A significant increase in humidity might indicate discomfort or rain
+    // --- Humidity ---
+    let humidityRisk = 0;
+    const humidityDiff = forecastReading.humidity - currentReading.humidity;
     if (humidityDiff >= 20) {
-        humiditySafety = "Avoid";
+        humidityRisk = 2;
     } else if (humidityDiff >= 10) {
-        humiditySafety = "Caution";
+        humidityRisk = 1;
     }
     
-    // Remove previous safety markers if they exist
-    if (window.safetyMarkerWind) {
-        map.removeLayer(window.safetyMarkerWind);
-    }
-    if (window.safetyMarkerPressure) {
-        map.removeLayer(window.safetyMarkerPressure);
-    }
-    if (window.safetyMarkerHumidity) {
-        map.removeLayer(window.safetyMarkerHumidity);
+    // --- Temperature ---
+    let temperatureRisk = 0;
+    const tempDiff = Math.abs(forecastReading.temperature - currentReading.temperature);
+    if (tempDiff >= 5) {
+        temperatureRisk = 2;
+    } else if (tempDiff >= 3) {
+        temperatureRisk = 1;
     }
     
-    // Get the main marker's location and define an offset (in degrees)
+    // Sensor Fusion: Determine overall risk using the highest risk level detected
+    const riskScores = [windRisk, pressureRisk, humidityRisk, temperatureRisk];
+    let overallRisk = "SAFE";
+    if (riskScores.includes(2)) {
+        overallRisk = "AVOID";
+    } else if (riskScores.includes(1)) {
+        overallRisk = "CAUTION";
+    } else {
+        overallRisk = "SAFE";
+    }
+    
+    // Remove previous overall safety marker if it exists
+    if (window.overallSafetyMarker) {
+        map.removeLayer(window.overallSafetyMarker);
+    }
+    
+    // Create a custom div icon for the overall safety indicator
+    const overallIcon = L.divIcon({
+        className: 'safety-indicator',
+        html: `<div style="background: white; border: 2px solid black; padding: 4px; border-radius: 4px;">Overall: ${overallRisk}</div>`,
+        iconSize: [120, 20],
+        iconAnchor: [0, 0]
+    });
+    
+    // Place the overall safety indicator at an offset from the main marker (north-east)
     const markerLatLng = marker.getLatLng();
     const offset = 0.005;
-    
-    // Create a custom icon for wind speed indicator (displayed to the east)
-    const windIcon = L.divIcon({
-        className: 'safety-indicator',
-        html: `<div style="background: white; border: 2px solid black; padding: 4px; border-radius: 4px;">Wind: ${windSafety}</div>`,
-        iconSize: [80, 20],
-        iconAnchor: [0, 0]
-    });
-    const windLatLng = L.latLng(markerLatLng.lat, markerLatLng.lng + offset);
-    window.safetyMarkerWind = L.marker(windLatLng, { icon: windIcon, interactive: false }).addTo(map);
-    
-    // Create a custom icon for air pressure indicator (displayed to the north)
-    const pressureIcon = L.divIcon({
-        className: 'safety-indicator',
-        html: `<div style="background: white; border: 2px solid black; padding: 4px; border-radius: 4px;">Pressure: ${pressureSafety}</div>`,
-        iconSize: [100, 20],
-        iconAnchor: [0, 0]
-    });
-    const pressureLatLng = L.latLng(markerLatLng.lat + offset, markerLatLng.lng);
-    window.safetyMarkerPressure = L.marker(pressureLatLng, { icon: pressureIcon, interactive: false }).addTo(map);
-    
-    // Create a custom icon for humidity indicator (displayed to the west)
-    const humidityIcon = L.divIcon({
-        className: 'safety-indicator',
-        html: `<div style="background: white; border: 2px solid black; padding: 4px; border-radius: 4px;">Humidity: ${humiditySafety}</div>`,
-        iconSize: [100, 20],
-        iconAnchor: [0, 0]
-    });
-    const humidityLatLng = L.latLng(markerLatLng.lat, markerLatLng.lng - offset);
-    window.safetyMarkerHumidity = L.marker(humidityLatLng, { icon: humidityIcon, interactive: false }).addTo(map);
+    const overallLatLng = L.latLng(markerLatLng.lat + offset, markerLatLng.lng + offset);
+    window.overallSafetyMarker = L.marker(overallLatLng, { icon: overallIcon, interactive: false }).addTo(map);
 }
 
 // Function to create charts using Chart.js
