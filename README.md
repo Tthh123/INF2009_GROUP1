@@ -7,6 +7,55 @@
 - Nik Mohammad Farhan (2201237)
 - Wong Meng Lun Alan (2201038)
 
+## ⚙️ Setup Instructions
+
+Follow the steps below to set up the project on your local machine or Raspberry Pi:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Tthh123/INF2009_GROUP1.git
+cd INF2009_GROUP1
+```
+
+### 2. Create a Virtual Environment (Optional but Recommended)
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Sensor Configuration
+
+Ensure that all sensors are properly connected to your Raspberry Pi using the correct GPIO, I2C, or UART pins.
+
+### 5. Running the Application
+
+- **Edge Node (Sensor Collection + Inference):**
+
+  ```bash
+  python edge/main.py
+  ```
+
+- **Fog Node (ML Training / Model Update):**
+
+  ```bash
+  python fog/train_model.py
+  ```
+
+- **Cloud Node (Flask Server + Dashboard):**
+
+  ```bash
+  cd cloud
+  python app.py
+  ```
+
   
 ## 1. Work Packages and Responsibilities
 
