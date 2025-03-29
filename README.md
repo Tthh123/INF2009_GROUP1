@@ -46,7 +46,7 @@ Ensure that all sensors are properly connected to your Raspberry Pi using the co
 - **Fog Node (ML Training / Model Update):**
 
   ```bash
-  python Forecast_Model/inference.py
+  python3 Forecast_Model/inference.py
   ```
 
 - **Cloud Node (Flask Server + Dashboard):**
