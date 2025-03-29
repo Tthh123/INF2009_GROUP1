@@ -46,7 +46,7 @@ Ensure that all sensors are properly connected to your Raspberry Pi using the co
   python3 Sensors/combined_sensors.py
   ```
 
-- **Fog Node (ML Training / Model Update):**
+- **Meteorological Forecast Node (Time-Series ML Forecasting):**
 
   ```bash
   python3 Forecast_Model/inference.py
