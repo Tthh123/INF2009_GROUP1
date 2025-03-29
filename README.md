@@ -37,7 +37,7 @@ Ensure that all sensors are properly connected to your Raspberry Pi using the co
 
 ### 5. Running the Application
 
-- **Edge Node (Sensor Collection + Inference):**
+- **Edge Node (Sensor Collection):**
 
   ```bash
   python3 Sensors/combined_sensors.py
