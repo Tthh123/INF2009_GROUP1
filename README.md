@@ -50,10 +50,6 @@ This section outlines the work packages and designated responsibilities for each
 - Handled **low-level interface protocols** such as I2C, GPIO, and UART to ensure sensor communication with the Raspberry Pi.  
 - Integrated Raspberry Pi Pico as an **ADC bridge** for analog sensor (anemometer) readings.
 
----
-
-Each member is responsible for **documentation, testing, and integration** of their respective work packages. Collaboration was maintained through GitHub and regular team sync-ups to ensure alignment.
-
 
 
 
@@ -85,8 +81,6 @@ This section outlines the rationale behind the selection of hardware and tools u
 | **MQTT Protocol** | Lightweight messaging protocol used for **efficient sensor data transmission** between edge, fog, and cloud layers. |
 | **Flask (Web Server)** | Enables real-time **data visualization via dashboard**. Simple and fast to deploy. |
 | **Redis (NoSQL)** | Used for **storing sensor data** and model results in the cloud. Chosen for its speed and ease of integration with Flask. |
-
----
 
 
 
