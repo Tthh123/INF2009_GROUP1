@@ -35,70 +35,134 @@ function updateSafetyFusion() {
         return;
     }
     
-    // Use the first forecast prediction for the sensor fusion
-    const forecastReading = forecastData.predictions[0];
+    // Use only the next 4 forecast predictions (or fewer if not available)
+    const forecasts = forecastData.predictions.slice(0, 4);
+    let maxOverallRiskValue = 0;
     
-    // --- Wind Speed (convert m/s to km/h) ---
-    const currentWindKmh = currentReading.wind_speed * 3.6;
-    const forecastWindKmh = forecastReading.wind_speed * 3.6;
-    let windRisk = 0;
-    const windDiff = forecastWindKmh - currentWindKmh;
-    if (windDiff >= 10) {
-        windRisk = 2;
-    } else if (windDiff >= 5) {
-        windRisk = 1;
+    // Calculate overall trends between current reading and the last forecast:
+    // --- Pressure Trend ---
+    const initialPressure = currentReading.air_pressure;
+    const finalPressure = forecasts[forecasts.length - 1].air_pressure;
+    const pressureDrop = initialPressure - finalPressure;
+    let pressureTrendRisk = 0;
+    if (pressureDrop >= 5) {
+        pressureTrendRisk = 2;
+    } else if (pressureDrop >= 3) {
+        pressureTrendRisk = 1;
     }
     
-    // --- Air Pressure ---
-    let pressureRisk = 0;
-    const pressureDiff = forecastReading.air_pressure - currentReading.air_pressure;
-    if (pressureDiff <= -5) {
-        pressureRisk = 2;
-    } else if (pressureDiff <= -3) {
-        pressureRisk = 1;
+    // --- Humidity Trend ---
+    const initialHumidity = currentReading.humidity;
+    const finalHumidity = forecasts[forecasts.length - 1].humidity;
+    const humidityIncrease = finalHumidity - initialHumidity;
+    let humidityTrendRisk = 0;
+    if (humidityIncrease >= 20) {
+        humidityTrendRisk = 2;
+    } else if (humidityIncrease >= 10) {
+        humidityTrendRisk = 1;
     }
     
-    // --- Humidity ---
-    let humidityRisk = 0;
-    const humidityDiff = forecastReading.humidity - currentReading.humidity;
-    if (humidityDiff >= 20) {
-        humidityRisk = 2;
-    } else if (humidityDiff >= 10) {
-        humidityRisk = 1;
-    }
+    forecasts.forEach(forecastReading => {
+        // --- Wind Speed (convert m/s to km/h) ---
+        const currentWindKmh = currentReading.wind_speed * 3.6;
+        const forecastWindKmh = forecastReading.wind_speed * 3.6;
+        
+        // Relative risk for wind speed (change from current reading)
+        let windRelativeRisk = 0;
+        const windDiff = forecastWindKmh - currentWindKmh;
+        if (windDiff >= 10) {
+            windRelativeRisk = 2;
+        } else if (windDiff >= 5) {
+            windRelativeRisk = 1;
+        }
+        // Absolute risk for wind speed (using thresholds suitable for Singapore)
+        let windAbsoluteRisk = 0;
+        if (forecastWindKmh >= 50) { // unusually strong winds
+            windAbsoluteRisk = 2;
+        } else if (forecastWindKmh >= 40) {
+            windAbsoluteRisk = 1;
+        }
+        const windRisk = Math.max(windRelativeRisk, windAbsoluteRisk);
+        
+        // --- Air Pressure ---
+        let pressureRelativeRisk = 0;
+        const pressureDiff = forecastReading.air_pressure - currentReading.air_pressure;
+        if (pressureDiff <= -5) {
+            pressureRelativeRisk = 2;
+        } else if (pressureDiff <= -3) {
+            pressureRelativeRisk = 1;
+        }
+        let pressureAbsoluteRisk = 0;
+        if (forecastReading.air_pressure < 1005) {
+            pressureAbsoluteRisk = 2;
+        } else if (forecastReading.air_pressure < 1010) {
+            pressureAbsoluteRisk = 1;
+        }
+        // Combine the per-forecast risk with the trend risk
+        const pressureRisk = Math.max(pressureRelativeRisk, pressureAbsoluteRisk, pressureTrendRisk);
+        
+        // --- Humidity ---
+        let humidityRisk = 0;
+        if (forecastReading.humidity >= 90) {
+            humidityRisk = 2;
+        } else if (forecastReading.humidity >= 80) {
+            humidityRisk = 1;
+        }
+        // Combine with the trend risk
+        const totalHumidityRisk = Math.max(humidityRisk, humidityTrendRisk);
+        
+        // --- Temperature ---
+        let temperatureRisk = 0;
+        // If the current temperature is already very high, skip further checks
+        if (currentReading.temperature >= 35) {
+            temperatureRisk = 2;
+        } else {
+            // Relative change check
+            const tempDiff = Math.abs(forecastReading.temperature - currentReading.temperature);
+            if (tempDiff >= 5) {
+                temperatureRisk = 2;
+            } else if (tempDiff >= 3) {
+                temperatureRisk = 1;
+            }
+            // Absolute temperature thresholds for dangerous conditions in Singapore
+            if (forecastReading.temperature >= 35) {
+                temperatureRisk = Math.max(temperatureRisk, 2);
+            } else if (forecastReading.temperature >= 33) {
+                temperatureRisk = Math.max(temperatureRisk, 1);
+            }
+        }
+        
+        // --- Rain Formation Risk ---
+        // Using meteorological principles:
+        // - Warmer temperatures increase air's moisture capacity.
+        // - A drop in pressure indicates approaching storm systems.
+        // - High humidity near saturation signals condensation potential.
+        let rainRisk = 0;
+        if (
+            forecastReading.temperature >= 33 && 
+            forecastReading.humidity >= 80 && 
+            forecastReading.air_pressure < 1010
+        ) {
+            rainRisk = 2;
+        } else if (
+            forecastReading.temperature >= 32 &&
+            forecastReading.humidity >= 75 &&
+            forecastReading.air_pressure < 1012
+        ) {
+            rainRisk = 1;
+        }
+        
+        // Determine overall risk for this forecast reading by taking the maximum risk value
+        const forecastRiskValue = Math.max(windRisk, pressureRisk, totalHumidityRisk, temperatureRisk, rainRisk);
+        maxOverallRiskValue = Math.max(maxOverallRiskValue, forecastRiskValue);
+    });
     
-    // --- Temperature ---
-    let temperatureRisk = 0;
-    const tempDiff = Math.abs(forecastReading.temperature - currentReading.temperature);
-    if (tempDiff >= 5) {
-        temperatureRisk = 2;
-    } else if (tempDiff >= 3) {
-        temperatureRisk = 1;
-    }
-    
-    // --- Combined Heat Risk ---
-    // Define thresholds for high temperature and low humidity (e.g., >35°C and <20% humidity)
-    let heatRisk = 0;
-    const highTempThreshold = 35;
-    const lowHumidityThreshold = 20;
-    // Check both current and forecast readings, and take the worst-case condition
-    if ((currentReading.temperature > highTempThreshold && currentReading.humidity < lowHumidityThreshold) ||
-        (forecastReading.temperature > highTempThreshold && forecastReading.humidity < lowHumidityThreshold)) {
-        heatRisk = 2;
-    } else if ((currentReading.temperature > highTempThreshold - 2 && currentReading.humidity < lowHumidityThreshold + 5) ||
-               (forecastReading.temperature > highTempThreshold - 2 && forecastReading.humidity < lowHumidityThreshold + 5)) {
-        heatRisk = 1;
-    }
-    
-    // Sensor Fusion: Determine overall risk using the highest risk level detected
-    const riskScores = [windRisk, pressureRisk, humidityRisk, temperatureRisk, heatRisk];
+    // Map the maximum risk value to a label
     let overallRisk = "SAFE";
-    if (riskScores.includes(2)) {
+    if (maxOverallRiskValue === 2) {
         overallRisk = "AVOID";
-    } else if (riskScores.includes(1)) {
+    } else if (maxOverallRiskValue === 1) {
         overallRisk = "CAUTION";
-    } else {
-        overallRisk = "SAFE";
     }
     
     // Remove previous overall safety marker if it exists
@@ -121,16 +185,18 @@ function updateSafetyFusion() {
     window.overallSafetyMarker = L.marker(overallLatLng, { icon: overallIcon, interactive: false }).addTo(map);
 }
 
-
 // Function to create charts using Chart.js
 function createCharts() {
-    if (!currentReading || !forecastData) {
+    if (!currentReading || !forecastData || forecastData.predictions.length === 0) {
         alert("Sensor or forecast data not available yet.");
         return;
     }
+    
+    // Use only the next 4 forecast predictions for charting
+    const forecastPredictions = forecastData.predictions.slice(0, 4);
 
     // Define labels: "Now" and then the times from forecast predictions
-    const labels = ["Now", ...forecastData.predictions.map(pred => {
+    const labels = ["Now", ...forecastPredictions.map(pred => {
         const date = new Date(pred.timestamp);
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     })];
@@ -138,24 +204,24 @@ function createCharts() {
     // Define metrics to chart: current reading plus forecast values
     const metrics = {
         temperature: {
-            label: "Temperature (C)",
+            label: "Temperature (°C)",
             current: currentReading.temperature,
-            forecast: forecastData.predictions.map(pred => pred.temperature)
+            forecast: forecastPredictions.map(pred => pred.temperature)
         },
         wind_speed: {
             label: "Wind Speed (m/s)",
             current: currentReading.wind_speed,
-            forecast: forecastData.predictions.map(pred => pred.wind_speed)
+            forecast: forecastPredictions.map(pred => pred.wind_speed)
         },
         air_pressure: {
             label: "Air Pressure (hPa)",
             current: currentReading.air_pressure,
-            forecast: forecastData.predictions.map(pred => pred.air_pressure)
+            forecast: forecastPredictions.map(pred => pred.air_pressure)
         },
         humidity: {
             label: "Humidity (%)",
             current: currentReading.humidity,
-            forecast: forecastData.predictions.map(pred => pred.humidity)
+            forecast: forecastPredictions.map(pred => pred.humidity)
         }
     };
 
