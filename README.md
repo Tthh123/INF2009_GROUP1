@@ -14,7 +14,7 @@ Follow the steps below to set up the project on your local machine or Raspberry 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/INF2009_GROUP1.git
+git clone https://github.com/Tthh123/INF2009_GROUP1.git
 cd INF2009_GROUP1
 ```
 
