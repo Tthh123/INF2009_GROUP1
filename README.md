@@ -33,7 +33,10 @@ pip install -r requirements.txt
 
 ### 4. Sensor Configuration
 
-Ensure that all sensors are properly connected to your Raspberry Pi using the correct GPIO, I2C, or UART pins.
+Ensure that all sensors are properly connected to your Raspberry Pi using the correct GPIO, I2C, or UART pins (You may refer to the guide below for example)
+
+![image](https://github.com/user-attachments/assets/1b721b19-0061-4465-a0a5-eb760278380a)
+
 
 ### 5. Running the Application
 
