@@ -29,7 +29,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const marker = L.marker([1.4137857851172828, 103.91225886502723]).addTo(map);
 marker.bindPopup("Click here for detailed sensor data");
 
-// Function to update the overall safety indicator using sensor fusion
 function updateSafetyFusion() {
     // Ensure we have both current and forecast data with at least one prediction
     if (!currentReading || !forecastData || forecastData.predictions.length === 0) {
@@ -77,8 +76,22 @@ function updateSafetyFusion() {
         temperatureRisk = 1;
     }
     
+    // --- Combined Heat Risk ---
+    // Define thresholds for high temperature and low humidity (e.g., >35°C and <20% humidity)
+    let heatRisk = 0;
+    const highTempThreshold = 35;
+    const lowHumidityThreshold = 20;
+    // Check both current and forecast readings, and take the worst-case condition
+    if ((currentReading.temperature > highTempThreshold && currentReading.humidity < lowHumidityThreshold) ||
+        (forecastReading.temperature > highTempThreshold && forecastReading.humidity < lowHumidityThreshold)) {
+        heatRisk = 2;
+    } else if ((currentReading.temperature > highTempThreshold - 2 && currentReading.humidity < lowHumidityThreshold + 5) ||
+               (forecastReading.temperature > highTempThreshold - 2 && forecastReading.humidity < lowHumidityThreshold + 5)) {
+        heatRisk = 1;
+    }
+    
     // Sensor Fusion: Determine overall risk using the highest risk level detected
-    const riskScores = [windRisk, pressureRisk, humidityRisk, temperatureRisk];
+    const riskScores = [windRisk, pressureRisk, humidityRisk, temperatureRisk, heatRisk];
     let overallRisk = "SAFE";
     if (riskScores.includes(2)) {
         overallRisk = "AVOID";
@@ -107,6 +120,7 @@ function updateSafetyFusion() {
     const overallLatLng = L.latLng(markerLatLng.lat + offset, markerLatLng.lng + offset);
     window.overallSafetyMarker = L.marker(overallLatLng, { icon: overallIcon, interactive: false }).addTo(map);
 }
+
 
 // Function to create charts using Chart.js
 function createCharts() {
