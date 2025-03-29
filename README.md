@@ -25,10 +25,6 @@ This section outlines the rationale behind the selection of hardware and tools u
 | **Temperature & Humidity Sensor (DHT22)** | Captures environmental data crucial for predicting microclimate changes. Offers **good accuracy, low cost**, and easy integration via GPIO. |
 | **Barometric Sensor (BMP280)** | Detects changes in atmospheric pressure, aiding in **storm prediction and trend analysis**. Communicates via I2C, which is natively supported by the Raspberry Pi. |
 | **Anemometer (SEN-TEM-025)** | Measures wind speed, essential for assessing outdoor weather safety. Outputs analog signal, requiring conversion via the Pi Pico. |
-| **LoRaWAN Module (SX1262)** | (Recommended addition) Enables **long-range, low-power wireless communication**, critical for remote areas without internet access. |
-| **GPS Module** | (Recommended addition) Provides **location tagging for sensor data**, allowing alerts to be contextually relevant and hyper-local. |
-| **Weatherproof Enclosure** | (Recommended addition) Protects electronic components from outdoor elements (rain, dust, impact), ensuring reliability in the field. |
-| **Portable Power Bank / Solar Panel** | (Recommended addition) Supports off-grid use by supplying power to the Raspberry Pi system for extended deployments. |
 
 ---
 
@@ -41,4 +37,3 @@ This section outlines the rationale behind the selection of hardware and tools u
 | **MQTT Protocol** | Lightweight messaging protocol used for **efficient sensor data transmission** between edge, fog, and cloud layers. |
 | **Flask (Web Server)** | Enables real-time **data visualization via dashboard**. Simple and fast to deploy. |
 | **Redis (NoSQL)** | Used for **storing sensor data** and model results in the cloud. Chosen for its speed and ease of integration with Flask. |
-| **Edge Impulse (Optional)** | Platform for developing and deploying ML models to edge devices. Useful for real-time model updates and retraining. |
