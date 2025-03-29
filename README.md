@@ -132,6 +132,96 @@ This section outlines the rationale behind the selection of hardware and tools u
 
 ## 3. Machine Learning
 
+### 🎯 Purpose
+
+The goal of our machine learning model is to **predict short-term weather conditions** based on historical sensor data. Every 10 minutes, our model forecasts the next 4 hours of:
+
+- **Temperature (°C)**
+- **Relative Humidity (%)**
+- **Air Pressure (mbar)**
+- **Wind Speed (m/s)**
+
+This enables real-time, hyper-local weather forecasting for remote deployments — especially useful in outdoor or mountainous regions where weather stations are sparse.
+
+---
+
+### 📦 Dataset
+
+We trained our model using the [BGC-Jena Climate Dataset](https://www.bgc-jena.mpg.de/wetter/), which provides comprehensive weather sensor readings at **10-minute intervals**.
+
+Key Features:
+- `T (degC)`: Temperature
+- `rh (%)`: Relative Humidity
+- `p (mbar)`: Air Pressure
+- `wv (m/s)`: Wind Speed
+
+---
+
+### ⏳ Problem Formulation: Time Series Forecasting
+
+We use a **sliding window** approach for training:
+- **Input Window**: Last 27 time steps (i.e. past 270 minutes) (CNNs were used, with a kernel size of 4)
+- **Output Window**: Next 24 time steps (i.e. 4 hours into the future)
+
+This allows the model to learn temporal patterns and forecast trends for each feature.
+
+---
+
+### 🛠️ Frameworks Used
+
+- **Training**: TensorFlow (Keras API)
+- **Inference**: TensorFlow Lite for on-device execution
+- Optimized for **Raspberry Pi 5** using TFLite’s lightweight runtime
+
+---
+
+### 🧪 Models Experimented
+
+| Model               | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| **Baseline**        | Predicts the last observed value for all future time steps (one for each weather variable)  |
+| **CNN (per feature)** | Separate convolutional models for each weather variable                    |
+| **Multi-output CNN** | A single model that predicts all 4 features at once for all 24 time steps |
+
+---
+
+### ✅ Why Multi-Output CNN Was Chosen
+
+- Comparable accuracy to individual CNNs
+- But with **much smaller model size** and **lower inference overhead**
+- Ideal for real-time forecasting on **resource-constrained edge devices** like Raspberry Pi
+
+---
+
+### 📊 Experimental Results
+
+#### 🔹 MAE and RMSE Comparison
+
+| Model            | MAE (Temp) | MAE (Pressure) | MAE (Humidity) | MAE (Wind Speed) | RMSE (Temp) | RMSE (Pressure) | RMSE (Humidity) | RMSE (Wind Speed) |
+|------------------|------------|----------------|----------------|------------------|-------------|------------------|------------------|--------------------|
+| **Baseline (4 models)**     | TBC       | TBC           | TBC          | TBC             | TBC        | TBC             |TBC            | TBC               |
+| **CNN (4 models)**     | TBC     | TBC         | TBC         | TBC           | TBC      | TBC          | TBC          | TBC             |
+| **Multi-output CNN** | **0.976**       | 0.504           | 3.972           | 0.673            | 1.392        | 0.693             | 5.890             | 0.911               |
+
+#### 🔹 Model Size Comparison (TFLite)
+
+| Model Type        | Approximate TFLite Model Size |
+|-------------------|-------------------------------|
+| **Baseline (x4)**     | ~48 KB (4 x 12 KB)              |
+| **CNN (4 models)**     | ~196 KB (4 × 49 KB)              |
+| **Multi-output CNN** | **115 KB**                        |
+
+✅ **Conclusion**:  
+The **multi-output CNN** achieves near-parity in accuracy with the individual CNNs, while drastically reducing model size and computational overhead — making it ideal for **real-time, on-device inference** on edge devices like the Raspberry Pi.
+
+---
+
+### 📦 Deployment Details
+
+- The final **multi-output CNN** model is exported as a `.tflite` file.
+- It runs directly on a Raspberry Pi 5 via `tflite-runtime`.
+- Inference is quick - forecasts are published via MQTT every 10 minutes.
+
 ## 4. Web Dashboard
 
 For the main dashboard, we would have a map of Singapore, which shows all the active weather stations (But we only have 1 for now), and each weather station would display their safety alert consisting of AVOID, CAUTION, AVOID which is dependent on the data that we receive/predict. 
