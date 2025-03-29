@@ -86,6 +86,10 @@ This section outlines the rationale behind the selection of hardware and tools u
 
 ## 4. Web Dashboard
 
+![image](https://github.com/user-attachments/assets/5da9ca03-a85f-42c5-8d3b-c9e87254b46e)
+![image](https://github.com/user-attachments/assets/9087e83a-658b-4d37-9d20-5093f774c85b)
+
+
 ## 5. Project Progress
 
 ### March 1 – March 7
