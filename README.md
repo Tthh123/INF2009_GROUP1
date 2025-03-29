@@ -12,7 +12,7 @@
 
 ## 🛠️ Hardware and Tools Selection – Justification
 
-This section outlines the rationale behind the selection of hardware and tools used for our **Localized Weather Early Warning System**. All choices were made based on criteria such as **efficiency, suitability for remote outdoor use, and compatibility with edge computing frameworks**.
+This section outlines the rationale behind the selection of hardware and tools used for our project. All choices were made based on criteria such as **efficiency, suitability for remote outdoor use, and compatibility with edge computing frameworks**.
 
 ---
 
