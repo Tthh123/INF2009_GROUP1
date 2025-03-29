@@ -14,7 +14,7 @@ This section outlines the work packages and designated responsibilities for each
 
 ---
 
-### ☁️ Cloud Pi
+### ☁️ Cloud Pi [All code commits are under Travis' account due to the limitations of PIs]
 
 **1. Frontend Development – Travis**  
 - Designed and implemented the **user-facing dashboard** using Flask and web technologies.  
@@ -86,7 +86,12 @@ This section outlines the rationale behind the selection of hardware and tools u
 
 ## 4. Web Dashboard
 
+For the main dashboard, we would have a map of Singapore, which shows all the active weather stations (But we only have 1 for now), and each weather station would display their safety alert consisting of AVOID, CAUTION, AVOID which is dependent on the data that we receive/predict. 
+
 ![image](https://github.com/user-attachments/assets/5da9ca03-a85f-42c5-8d3b-c9e87254b46e)
+
+For more information, if the user clicks on a weather station it would show 4 charts: Temperature, Humidity, Pressure, Wind Speed, it will show the next 4 predicted hours' reading.
+
 ![image](https://github.com/user-attachments/assets/9087e83a-658b-4d37-9d20-5093f774c85b)
 
 
