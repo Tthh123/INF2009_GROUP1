@@ -21,7 +21,7 @@ This section outlines the work packages and designated responsibilities for each
 - Responsible for **data visualization** of sensor readings and weather alerts.  
 - Ensured responsive design and usability of the dashboard interface.
 
-**2. Backend Development – Jun Jie (JJ)**  
+**2. Backend Development – Jun Jie**  
 - Developed the **Flask server API** to handle incoming data and serve predictions to the frontend.  
 - Connected the backend to a **Redis (NoSQL) database** for storing sensor and forecast data.  
 - Ensured smooth handling of API routes and response formatting.
