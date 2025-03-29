@@ -40,20 +40,19 @@ Ensure that all sensors are properly connected to your Raspberry Pi using the co
 - **Edge Node (Sensor Collection + Inference):**
 
   ```bash
-  python edge/main.py
+  python3 Sensors/combined_sensors.py
   ```
 
 - **Fog Node (ML Training / Model Update):**
 
   ```bash
-  python fog/train_model.py
+  python Forecast_Model/inference.py
   ```
 
 - **Cloud Node (Flask Server + Dashboard):**
 
   ```bash
-  cd cloud
-  python app.py
+  python3 Web_Dashboard/app.py
   ```
 
   
