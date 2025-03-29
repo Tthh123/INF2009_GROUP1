@@ -8,7 +8,7 @@
 - Wong Meng Lun Alan (2201038)
 
   
-## 📦 Work Package Creation and Individual Responsibilities
+## 📦 Work Packages and Responsibilities
 
 This section outlines the work packages and designated responsibilities for each team member. Tasks have been divided based on the system architecture: **Cloud**, **Fog**, and **Edge**, with clearly defined scopes to ensure collaboration and accountability.
 
@@ -55,6 +55,9 @@ This section outlines the work packages and designated responsibilities for each
 Each member is responsible for **documentation, testing, and integration** of their respective work packages. Collaboration was maintained through GitHub and regular team sync-ups to ensure alignment.
 
 
+
+
+
 ## 🛠️ Hardware and Tools Selection – Justification
 
 This section outlines the rationale behind the selection of hardware and tools used for our project. All choices were made based on criteria such as **efficiency, suitability for remote outdoor use, and compatibility with edge computing frameworks**.
@@ -84,6 +87,8 @@ This section outlines the rationale behind the selection of hardware and tools u
 | **Redis (NoSQL)** | Used for **storing sensor data** and model results in the cloud. Chosen for its speed and ease of integration with Flask. |
 
 ---
+
+
 
 ## Project Progress
 
