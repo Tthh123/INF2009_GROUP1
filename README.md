@@ -42,14 +42,3 @@ This section outlines the rationale behind the selection of hardware and tools u
 | **Flask (Web Server)** | Enables real-time **data visualization via dashboard**. Simple and fast to deploy. |
 | **Redis (NoSQL)** | Used for **storing sensor data** and model results in the cloud. Chosen for its speed and ease of integration with Flask. |
 | **Edge Impulse (Optional)** | Platform for developing and deploying ML models to edge devices. Useful for real-time model updates and retraining. |
-
----
-
-### 🔍 Selection Criteria
-
-- ✅ **Suitability for outdoor deployment**
-- 🔌 **Low power consumption**
-- 🔗 **Compatibility with edge computing architectures**
-- ⚙️ **Ease of integration (GPIO, I2C, UART, ADC)**
-- 📶 **Offline-capable communication methods**
-- 💰 **Cost-effectiveness and availability**
