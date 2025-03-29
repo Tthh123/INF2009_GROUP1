@@ -7,6 +7,54 @@
 - Nik Mohammad Farhan (2201237)
 - Wong Meng Lun Alan (2201038)
 
+  
+## 📦 Work Package Creation and Individual Responsibilities
+
+This section outlines the work packages and designated responsibilities for each team member. Tasks have been divided based on the system architecture: **Cloud**, **Fog**, and **Edge**, with clearly defined scopes to ensure collaboration and accountability.
+
+---
+
+### ☁️ Cloud Pi
+
+**1. Frontend Development – Travis**  
+- Designed and implemented the **user-facing dashboard** using Flask and web technologies.  
+- Responsible for **data visualization** of sensor readings and weather alerts.  
+- Ensured responsive design and usability of the dashboard interface.
+
+**2. Backend Development – Jun Jie (JJ)**  
+- Developed the **Flask server API** to handle incoming data and serve predictions to the frontend.  
+- Connected the backend to a **Redis (NoSQL) database** for storing sensor and forecast data.  
+- Ensured smooth handling of API routes and response formatting.
+
+**3. Communication Protocol – Alan**  
+- Implemented **MQTT messaging** between edge, fog, and cloud layers.  
+- Configured **ngrok tunneling** for remote testing and webhook-based communications.  
+- Ensured secure and reliable transmission of both sensor data and alerts.
+
+---
+
+### 🌫️ Fog Pi
+
+**ML Model Training – Farhan**  
+- Designed and trained the **Convolutional Neural Network (CNN)** for weather condition classification.  
+- Utilized **TensorFlow Lite** to convert and optimize models for edge deployment.  
+- Periodically retrains the model using new sensor datasets and handles versioning of model updates.
+
+---
+
+### 🛰️ Edge Pi
+
+**Sensor Integration & Interface Protocols – Yu Rui**  
+- Configured environmental sensors: **DHT22, BMP280, Anemometer** for accurate data collection.  
+- Programmed the **data acquisition scripts** using Python.  
+- Handled **low-level interface protocols** such as I2C, GPIO, and UART to ensure sensor communication with the Raspberry Pi.  
+- Integrated Raspberry Pi Pico as an **ADC bridge** for analog sensor (anemometer) readings.
+
+---
+
+Each member is responsible for **documentation, testing, and integration** of their respective work packages. Collaboration was maintained through GitHub and regular team sync-ups to ensure alignment.
+
+
 ## 🛠️ Hardware and Tools Selection – Justification
 
 This section outlines the rationale behind the selection of hardware and tools used for our project. All choices were made based on criteria such as **efficiency, suitability for remote outdoor use, and compatibility with edge computing frameworks**.
