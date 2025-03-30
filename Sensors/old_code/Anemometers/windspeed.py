@@ -2,6 +2,7 @@ import time
 import serial
 import paho.mqtt.client as mqtt
 import json
+import os
 
 # Open serial connection to Pico
 ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
@@ -11,8 +12,11 @@ A = 26.43  # Scaling factor from the extracted graph
 B = -5.67  # Offset
 
 # MQTT Configuration
-mqtt_broker = "localhost"  # MQTT Broker address (localhost for local testing)
-mqtt_port = 1883           # Default MQTT port
+mqtt_broker = os.getenv("MQTT_BROKER")  # MQTT Broker address (localhost for local testing)
+mqtt_port = int(os.getenv("MQTT_PORT"))           # Default MQTT port
+mqtt_user = os.getenv("MQTT_USER")           # MQTT username
+mqtt_password = os.getenv("MQTT_PASSWORD")   # MQTT password
+CA_CERT_PATH = "/home/team1/INF2009_GROUP1/ca.crt"  # Path to CA certificate
 mqtt_topic = "sensor/data"  # Topic to publish data
 
 # Create an MQTT client

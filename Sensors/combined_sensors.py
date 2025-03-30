@@ -6,6 +6,7 @@ import adafruit_dht
 import serial
 import paho.mqtt.client as mqtt
 import json
+import os
 
 # Define sensor types and GPIO pins
 SENSOR_BMP = adafruit_bmp280.Adafruit_BMP280_I2C(busio.I2C(board.SCL, board.SDA), address=0x76)
@@ -17,8 +18,11 @@ A = 26.43  # Scaling factor from the extracted graph
 B = -5.67  # Offset
 
 # MQTT Configuration
-mqtt_broker = "localhost"  # MQTT Broker address (localhost for local testing)
-mqtt_port = 1883           # Default MQTT port
+mqtt_broker = os.getenv("MQTT_BROKER")  # MQTT Broker address (localhost for local testing)
+mqtt_port = int(os.getenv("MQTT_PORT"))           # Default MQTT port
+mqtt_user = os.getenv("MQTT_USER")           # MQTT username
+mqtt_password = os.getenv("MQTT_PASSWORD")   # MQTT password
+CA_CERT_PATH = "/home/team1/INF2009_GROUP1/ca.crt"  # Path to CA certificate
 mqtt_topic = "sensor/data"  # Topic to publish data
 
 # Create MQTT client

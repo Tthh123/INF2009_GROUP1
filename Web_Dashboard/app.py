@@ -2,6 +2,7 @@ import requests
 import json
 import redis
 import datetime
+import os
 from flask import Flask, jsonify, render_template
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
@@ -17,8 +18,12 @@ redis_db = 0
 r = redis.Redis(host=redis_host, port=redis_port, db=redis_db, decode_responses=True)
 
 # Configure MQTT to use localhost
-app.config['MQTT_BROKER_URL'] = "localhost"
-app.config['MQTT_BROKER_PORT'] = 1883  # Default MQTT port
+app.config['MQTT_BROKER_URL'] = os.getenv("MQTT_BROKER")
+app.config['MQTT_BROKER_PORT'] = int(os.getenv("MQTT_PORT"))  # Default MQTT port
+app.config['MQTT_USERNAME'] = os.getenv("MQTT_USER")           # MQTT username
+app.config['MQTT_PASSWORD'] = os.getenv("MQTT_PASSWORD")   # MQTT password
+app.config['MQTT_TLS_ENABLED'] = True
+app.config['MQTT_TLS_CA_CERTS'] = "/home/team1/INF2009_GROUP1/ca.crt"  # Path to CA certificate
 app.config['MQTT_KEEPALIVE'] = 60
 app.config['MQTT_TOPIC'] = "sensor/data"  # Primary sensor topic
 

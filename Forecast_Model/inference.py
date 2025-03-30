@@ -29,8 +29,8 @@ if ngrok_port:
     print(f"Using dynamic ngrok port: {ngrok_port}")
 else:
     MQTT_BROKER = "0.tcp.ap.ngrok.io"
-    MQTT_PORT = 1883
-    print("Failed to retrieve ngrok port; using default port 1883.")
+    MQTT_PORT = 8883
+    print("Failed to retrieve ngrok port; using port 8883.")
 
 MQTT_TOPIC_SUB = "sensor/data"
 MQTT_TOPIC_PUB = "forecast/predictions"
