@@ -198,15 +198,23 @@ This allows the model to learn temporal patterns and forecast trends for each fe
 
 ### 📊 Experimental Results
 
-#### 🔹 MAE and RMSE Comparison
+#### Mean Absolute Error (MAE)
 
-| Model            | MAE (Temp) | MAE (Pressure) | MAE (Humidity) | MAE (Wind Speed) | RMSE (Temp) | RMSE (Pressure) | RMSE (Humidity) | RMSE (Wind Speed) |
-|------------------|------------|----------------|----------------|------------------|-------------|------------------|------------------|--------------------|
-| **Baseline (4 models)**     | TBC       | TBC           | TBC          | TBC             | TBC        | TBC             |TBC            | TBC               |
-| **CNN (4 models)**     | TBC     | TBC         | TBC         | TBC           | TBC      | TBC          | TBC          | TBC             |
-| **Multi-output CNN** | **0.976**       | 0.504           | 3.972           | 0.673            | 1.392        | 0.693             | 5.890             | 0.911               |
+| Model              | Temperature | Pressure | Humidity | Wind Speed |
+|-------------------|-------------|----------|----------|-------------|
+| **4x Baseline**   | 1.59        | 1.13     | 4.58     | 0.69        |
+| **4x CNN**        | 1.02        | 0.56     | **3.85** | **0.63**    |
+| **Multi-output CNN** | **0.95** | **0.48** | 4.04     | 0.67        |
 
-#### 🔹 Model Size Comparison (TFLite)
+#### Root Mean Squared Error (RMSE)
+
+| Model              | Temperature | Pressure | Humidity | Wind Speed |
+|-------------------|-------------|----------|----------|-------------|
+| **4x Baseline**   | 1.76        | 1.28     | 6.05     | 0.94        |
+| **4x CNN**        | 1.45        | 0.78     | **5.60** | **0.86**    |
+| **Multi-output CNN** | **1.41** | **0.68** | 5.95     | 0.91        |
+
+#### Model Size Comparison (TFLite)
 
 | Model Type        | Approximate TFLite Model Size |
 |-------------------|-------------------------------|
